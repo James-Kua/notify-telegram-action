@@ -12,7 +12,7 @@ A GitHub Action to send Telegram notifications for build success or failure.
 ## Example Usage
 
 ```yaml
-- uses: James-Kua/notify-telegram-action@v1
+- uses: James-Kua/notify-telegram-action@main
   with:
     to: ${{ secrets.TELEGRAM_TO }}
     token: ${{ secrets.TELEGRAM_TOKEN }}
