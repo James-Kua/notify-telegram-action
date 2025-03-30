@@ -26,3 +26,24 @@ A GitHub Action to send Telegram notifications for build success or failure.
     message_format: markdown
     disable_preview: true
     timezone: 'Asia/Singapore'
+```
+
+
+Sample telegram message
+
+```
+✅ Build storybook passed!
+
+⏰ 30 Mar 2025, 04:38PM [Sunday]
+
+📂 main
+
+🧑‍💻 James-Kua created commit: Use new workflow (#26)
+
+🗂 Changed files:
+.github/workflows/ci.yml   .github/workflows/storybook.yml
+
+🎯 Repository: James-Kua/RedditLite
+
+👍 See changes: https://github.com/James-Kua/RedditLite/commit/0aa096308fefacf86cdf6a0e83416c9f6d3abf01
+```
