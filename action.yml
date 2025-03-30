@@ -1,0 +1,75 @@
+name: 'Notify Telegram'
+description: 'Sends a Telegram message on build success or failure'
+author: 'James-Kua'
+branding:
+  icon: 'message-circle'
+  color: 'blue'
+inputs:
+  to:
+    description: 'Telegram chat ID'
+    required: true
+  token:
+    description: 'Telegram bot token'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Set current datetime as env variable
+      shell: bash
+      env:
+        TZ: 'Asia/Singapore'
+      run: echo "CURRENT_DATETIME=$(date +'%d %b %Y, %I:%M%p [%A]')" >> $GITHUB_ENV
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v46
+      with:
+        separator: "   "
+
+    - name: Send telegram on success
+      if: success()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ inputs.to }}
+        token: ${{ inputs.token }}
+        format: markdown
+        disable_web_page_preview: true
+        message: |
+          ✅ Build passed!
+
+          ⏰ *${{ env.CURRENT_DATETIME }}*
+
+          📂 ${{ github.head_ref || github.ref_name }}
+
+          🧑‍💻 *${{ github.actor }}* created commit: ${{ github.event.head_commit.message }}
+
+          🗂 *Changed files*:
+          ${{ steps.changed-files.outputs.all_changed_files }}
+          
+          🎯 *Repository*: ${{ github.repository }}
+          
+          👍 *See changes*: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+
+    - name: Send telegram on failure
+      if: failure()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ inputs.to }}
+        token: ${{ inputs.token }}
+        format: markdown
+        disable_web_page_preview: true
+        message: |
+          ❌ Build failed!
+
+          ⏰ *${{ env.CURRENT_DATETIME }}*
+
+          📂 ${{ github.head_ref || github.ref_name }}
+
+          🧑‍💻 *${{ github.actor }}* created commit: ${{ github.event.head_commit.message }}
+
+          🗂 *Changed files*:
+          ${{ steps.changed-files.outputs.all_changed_files }}
+          
+          🎯 *Repository*: ${{ github.repository }}
+          
+          👍 *See changes*: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
