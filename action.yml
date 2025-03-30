@@ -1,4 +1,4 @@
-name: 'Notify Telegram'
+name: 'notify-telegram-action'
 description: 'Sends a Telegram message on build success or failure'
 author: 'James-Kua'
 branding:
