@@ -5,26 +5,41 @@ branding:
   icon: 'message-circle'
   color: 'blue'
 inputs:
+  workflow_name:
+    description: 'Name of the workflow'
+    required: true
+    default: 'Build'
   to:
     description: 'Telegram chat ID'
     required: true
   token:
     description: 'Telegram bot token'
     required: true
+  changed_files:
+    description: 'A custom list of changed files to include in the message'
+    required: false
+    default: ''
+  message_format:
+    description: 'Message format for Telegram (markdown or html)'
+    required: false
+    default: 'markdown'
+  disable_preview:
+    description: 'Disable web page preview (true/false)'
+    required: false
+    default: 'true'
+  timezone:
+    description: 'Timezone for the datetime (e.g. Asia/Singapore)'
+    required: false
+    default: 'Asia/Singapore'
+
 runs:
   using: "composite"
   steps:
     - name: Set current datetime as env variable
       shell: bash
       env:
-        TZ: 'Asia/Singapore'
+        TZ: ${{ inputs.timezone }}
       run: echo "CURRENT_DATETIME=$(date +'%d %b %Y, %I:%M%p [%A]')" >> $GITHUB_ENV
-
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v46
-      with:
-        separator: "   "
 
     - name: Send telegram on success
       if: success()
@@ -32,10 +47,10 @@ runs:
       with:
         to: ${{ inputs.to }}
         token: ${{ inputs.token }}
-        format: markdown
-        disable_web_page_preview: true
+        format: ${{ inputs.message_format }}
+        disable_web_page_preview: ${{ inputs.disable_preview }}
         message: |
-          ✅ Build passed!
+          ✅ *${{ inputs.workflow_name }}* passed!
 
           ⏰ *${{ env.CURRENT_DATETIME }}*
 
@@ -44,8 +59,8 @@ runs:
           🧑‍💻 *${{ github.actor }}* created commit: ${{ github.event.head_commit.message }}
 
           🗂 *Changed files*:
-          ${{ steps.changed-files.outputs.all_changed_files }}
-          
+          ${{ inputs.changed_files }}
+
           🎯 *Repository*: ${{ github.repository }}
           
           👍 *See changes*: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
@@ -56,8 +71,8 @@ runs:
       with:
         to: ${{ inputs.to }}
         token: ${{ inputs.token }}
-        format: markdown
-        disable_web_page_preview: true
+        format: ${{ inputs.message_format }}
+        disable_web_page_preview: ${{ inputs.disable_preview }}
         message: |
           ❌ Build failed!
 
@@ -68,8 +83,8 @@ runs:
           🧑‍💻 *${{ github.actor }}* created commit: ${{ github.event.head_commit.message }}
 
           🗂 *Changed files*:
-          ${{ steps.changed-files.outputs.all_changed_files }}
-          
+          ${{ inputs.changed_files }}
+
           🎯 *Repository*: ${{ github.repository }}
           
           👍 *See changes*: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
